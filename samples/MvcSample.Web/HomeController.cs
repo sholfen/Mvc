@@ -90,6 +90,18 @@ namespace MvcSample.Web
         }
 
         /// <summary>
+        /// Action that shows multiple file upload.
+        /// </summary>
+        public ActionResult PostFile(IEnumerable<IFormFile> file)
+        {
+            foreach (var f in file)
+            {
+                f.SaveAs("C:\\Temp\\test-" + f.ParseContentDisposition().Value);
+            }
+            return View();
+        }
+
+        /// <summary>
         /// Action that exercises input formatter
         /// </summary>
         public ActionResult Post([FromBody]User user)

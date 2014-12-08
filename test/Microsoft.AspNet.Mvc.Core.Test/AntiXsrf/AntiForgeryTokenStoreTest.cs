@@ -164,9 +164,9 @@ namespace Microsoft.AspNet.Mvc.Core.Test
             // Arrange
             var mockHttpContext = new Mock<HttpContext>();
             var requestContext = new Mock<HttpRequest>();
-            IReadableStringCollection formsCollection =
+            IFormCollection formsCollection =
                 new MockCookieCollection(new Dictionary<string, string>() { { "form-field-name", string.Empty } });
-            requestContext.Setup(o => o.GetFormAsync(CancellationToken.None))
+            requestContext.Setup(o => o.ReadFormAsync(CancellationToken.None))
                           .Returns(Task.FromResult(formsCollection));
             mockHttpContext.Setup(o => o.Request)
                            .Returns(requestContext.Object);
@@ -191,11 +191,11 @@ namespace Microsoft.AspNet.Mvc.Core.Test
         public async Task GetFormToken_FormFieldIsInvalid_PropagatesException()
         {
             // Arrange
-            IReadableStringCollection formsCollection =
+            IFormCollection formsCollection =
                 new MockCookieCollection(new Dictionary<string, string>() { { "form-field-name", "invalid-value" } });
 
             var requestContext = new Mock<HttpRequest>();
-            requestContext.Setup(o => o.GetFormAsync(CancellationToken.None))
+            requestContext.Setup(o => o.ReadFormAsync(CancellationToken.None))
                           .Returns(Task.FromResult(formsCollection));
 
             var mockHttpContext = new Mock<HttpContext>();
@@ -233,9 +233,9 @@ namespace Microsoft.AspNet.Mvc.Core.Test
             // Arrange
             var mockHttpContext = new Mock<HttpContext>();
             var requestContext = new Mock<HttpRequest>();
-            IReadableStringCollection formsCollection =
+            IFormCollection formsCollection =
                 new MockCookieCollection(new Dictionary<string, string>() { { "form-field-name", "valid-value" } });
-            requestContext.Setup(o => o.GetFormAsync(CancellationToken.None))
+            requestContext.Setup(o => o.ReadFormAsync(CancellationToken.None))
                           .Returns(Task.FromResult(formsCollection));
             mockHttpContext.Setup(o => o.Request)
                            .Returns(requestContext.Object);
@@ -363,7 +363,7 @@ namespace Microsoft.AspNet.Mvc.Core.Test
             }
         }
 
-        private class MockCookieCollection : IReadableStringCollection
+        private class MockCookieCollection : IFormCollection
         {
             private Dictionary<string, string> _dictionary;
 
@@ -380,6 +380,14 @@ namespace Microsoft.AspNet.Mvc.Core.Test
                 get
                 {
                     return _dictionary.Keys;
+                }
+            }
+
+            public IFormFileCollection Files
+            {
+                get
+                {
+                    throw new NotImplementedException();
                 }
             }
 
