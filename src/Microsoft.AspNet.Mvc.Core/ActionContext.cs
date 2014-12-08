@@ -13,6 +13,7 @@ namespace Microsoft.AspNet.Mvc
         public ActionContext([NotNull] ActionContext actionContext)
             : this(actionContext.HttpContext, actionContext.RouteData, actionContext.ActionDescriptor)
         {
+            BindingContext = actionContext.BindingContext;
             ModelState = actionContext.ModelState;
             Controller = actionContext.Controller;
         }
@@ -40,11 +41,16 @@ namespace Microsoft.AspNet.Mvc
 
         public ActionDescriptor ActionDescriptor { get; private set; }
 
+
         /// <summary>
-        /// Input formatters associated with this context.
-        /// The formatters are populated only after IInputFormattersProvider runs.
+        /// Gets or sets the binding context.
         /// </summary>
-        public IList<IInputFormatter> InputFormatters { get; set; }
+        /// <remarks>
+        /// The <see cref="BindingContext"/> will only be available after resource filters 
+        /// and model binding have executed. Modifications to the binding context outside
+        /// of a resource filter will not affect binding of action arguments.
+        /// </remarks>
+        public ActionBindingContext BindingContext { get; set; }
 
         /// <summary>
         /// The controller is available only after the controller factory runs.

@@ -17,15 +17,15 @@ namespace Microsoft.AspNet.Mvc.Core.Test
         {
             // Arrange
             var actionContext = GetActionContext();
-            var context = new InputFormatterContext(actionContext, typeof(int));
-            actionContext.InputFormatters = new List<IInputFormatter>()
-                                                    {
-                                                        new TestInputFormatter(false, 0),
-                                                        new TestInputFormatter(false, 1),
-                                                        new TestInputFormatter(true, 2),
-                                                        new TestInputFormatter(true, 3)
-                                                    };
+            actionContext.BindingContext.InputFormatters = new List<IInputFormatter>()
+            {
+                new TestInputFormatter(false, 0),
+                new TestInputFormatter(false, 1),
+                new TestInputFormatter(true, 2),
+                new TestInputFormatter(true, 3)
+            };
 
+            var context = new InputFormatterContext(actionContext, typeof(int));
             var selector = new DefaultInputFormatterSelector();
 
             // Act
@@ -38,8 +38,10 @@ namespace Microsoft.AspNet.Mvc.Core.Test
 
         private static ActionContext GetActionContext()
         {
-            var httpContext = Mock.Of<HttpContext>();
-            return new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
+            return new ActionContext(Mock.Of<HttpContext>(), new RouteData(), new ActionDescriptor())
+            {
+                BindingContext = new ActionBindingContext()
+            };
 
         }
 

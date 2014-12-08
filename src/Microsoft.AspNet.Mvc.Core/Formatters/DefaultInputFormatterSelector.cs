@@ -7,7 +7,7 @@ namespace Microsoft.AspNet.Mvc
     {
         public IInputFormatter SelectFormatter(InputFormatterContext context)
         {
-            var formatters = context.ActionContext.InputFormatters;
+            var formatters = context.ActionContext.BindingContext.InputFormatters;
             foreach (var formatter in formatters)
             {
                 if (formatter.CanRead(context))

@@ -397,15 +397,16 @@ namespace System.Web.Http
         /// </param>
         public void Validate<TEntity>(TEntity entity, string keyPrefix)
         {
+            var bindingContext = ActionContext.BindingContext;
+            var modelMetadata = bindingContext.MetadataProvider.GetMetadataForType(() => entity, typeof(TEntity));
+
             var bodyValidationExcludeFiltersProvider = Context.RequestServices
                                                               .GetRequiredService<IValidationExcludeFiltersProvider>();
             var validator = Context.RequestServices.GetRequiredService<IBodyModelValidator>();
-            var metadataProvider = Context.RequestServices.GetRequiredService<IModelMetadataProvider>();
-            var modelMetadata = metadataProvider.GetMetadataForType(() => entity, typeof(TEntity));
-            var validatorProvider = Context.RequestServices.GetRequiredService<ICompositeModelValidatorProvider>();
+
             var modelValidationContext = new ModelValidationContext(
-                metadataProvider,
-                validatorProvider,
+                bindingContext.MetadataProvider,
+                bindingContext.ValidatorProvider,
                 ModelState,
                 modelMetadata,
                 containerMetadata: null,

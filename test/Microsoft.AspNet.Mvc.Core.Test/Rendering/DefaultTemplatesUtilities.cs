@@ -141,7 +141,13 @@ namespace Microsoft.AspNet.Mvc.Rendering
             IHtmlGenerator htmlGenerator)
         {
             var httpContext = new DefaultHttpContext();
-            var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
+            var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor())
+            {
+                BindingContext = new ActionBindingContext()
+                {
+                    ValidatorProvider = new DataAnnotationsModelValidatorProvider(),
+                },
+            };
 
             var serviceProvider = new Mock<IServiceProvider>();
             serviceProvider
@@ -157,20 +163,7 @@ namespace Microsoft.AspNet.Mvc.Rendering
             httpContext.RequestServices = serviceProvider.Object;
             if (htmlGenerator == null)
             {
-                var actionBindingContext = new ActionBindingContext(
-                    actionContext,
-                    provider,
-                    Mock.Of<IModelBinder>(),
-                    Mock.Of<IValueProvider>(),
-                    Mock.Of<IInputFormatterSelector>(),
-                    new DataAnnotationsModelValidatorProvider());
-                var actionBindingContextProvider = new Mock<IActionBindingContextProvider>();
-                actionBindingContextProvider
-                   .Setup(c => c.GetActionBindingContextAsync(It.IsAny<ActionContext>()))
-                   .Returns(Task.FromResult(actionBindingContext));
-
                 htmlGenerator = new DefaultHtmlGenerator(
-                    actionBindingContextProvider.Object,
                     GetAntiForgeryInstance(),
                     provider,
                     urlHelper);

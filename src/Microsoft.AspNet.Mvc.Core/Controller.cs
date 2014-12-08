@@ -95,9 +95,6 @@ namespace Microsoft.AspNet.Mvc
         [Activate]
         public IUrlHelper Url { get; set; }
 
-        [Activate]
-        public IActionBindingContextProvider BindingContextProvider { get; set; }
-
         public IPrincipal User
         {
             get
@@ -824,15 +821,15 @@ namespace Microsoft.AspNet.Mvc
                                                                     [NotNull] string prefix)
             where TModel : class
         {
-            if (BindingContextProvider == null)
+            if (ActionContext.BindingContext == null)
             {
-                var message = Resources.FormatPropertyOfTypeCannotBeNull(nameof(BindingContextProvider), 
-                                                                         GetType().FullName);
+                var message = Resources.FormatPropertyOfTypeCannotBeNull(
+                    nameof(ActionContext.BindingContext),
+                    typeof(ActionContext).Name);
                 throw new InvalidOperationException(message);
             }
 
-            var bindingContext = await BindingContextProvider.GetActionBindingContextAsync(ActionContext);
-            return await TryUpdateModelAsync(model, prefix, bindingContext.ValueProvider);
+            return await TryUpdateModelAsync(model, prefix, ActionContext.BindingContext.ValueProvider);
         }
 
         /// <summary>
@@ -851,22 +848,23 @@ namespace Microsoft.AspNet.Mvc
                                                                     [NotNull] IValueProvider valueProvider)
             where TModel : class
         {
-            if (BindingContextProvider == null)
+            if (ActionContext.BindingContext == null)
             {
-                var message = Resources.FormatPropertyOfTypeCannotBeNull(nameof(BindingContextProvider), 
-                                                                         GetType().FullName);
+                var message = Resources.FormatPropertyOfTypeCannotBeNull(
+                    nameof(ActionContext.BindingContext),
+                    typeof(ActionContext).Name);
                 throw new InvalidOperationException(message);
             }
-
-            var bindingContext = await BindingContextProvider.GetActionBindingContextAsync(ActionContext);
-            return await ModelBindingHelper.TryUpdateModelAsync(model,
-                                                                prefix,
-                                                                ActionContext.HttpContext,
-                                                                ModelState,
-                                                                bindingContext.MetadataProvider,
-                                                                bindingContext.ModelBinder,
-                                                                valueProvider,
-                                                                bindingContext.ValidatorProvider);
+            
+            return await ModelBindingHelper.TryUpdateModelAsync(
+                model,
+                prefix,
+                ActionContext.HttpContext,
+                ModelState,
+                ActionContext.BindingContext.MetadataProvider,
+                ActionContext.BindingContext.ModelBinder,
+                valueProvider,
+                ActionContext.BindingContext.ValidatorProvider);
         }
 
         /// <summary>
@@ -887,23 +885,24 @@ namespace Microsoft.AspNet.Mvc
             [NotNull] params Expression<Func<TModel, object>>[] includeExpressions)
            where TModel : class
         {
-            if (BindingContextProvider == null)
+            if (ActionContext.BindingContext == null)
             {
-                var message = Resources.FormatPropertyOfTypeCannotBeNull(nameof(BindingContextProvider),
-                                                                         GetType().FullName);
+                var message = Resources.FormatPropertyOfTypeCannotBeNull(
+                    nameof(ActionContext.BindingContext),
+                    typeof(ActionContext).Name);
                 throw new InvalidOperationException(message);
             }
-
-            var bindingContext = await BindingContextProvider.GetActionBindingContextAsync(ActionContext);
-            return await ModelBindingHelper.TryUpdateModelAsync(model,
-                                                                prefix,
-                                                                ActionContext.HttpContext,
-                                                                ModelState,
-                                                                bindingContext.MetadataProvider,
-                                                                bindingContext.ModelBinder,
-                                                                bindingContext.ValueProvider,
-                                                                bindingContext.ValidatorProvider,
-                                                                includeExpressions);
+            
+            return await ModelBindingHelper.TryUpdateModelAsync(
+                model,
+                prefix,
+                ActionContext.HttpContext,
+                ModelState,
+                ActionContext.BindingContext.MetadataProvider,
+                ActionContext.BindingContext.ModelBinder,
+                ActionContext.BindingContext.ValueProvider,
+                ActionContext.BindingContext.ValidatorProvider,
+                includeExpressions);
         }
 
         /// <summary>
@@ -923,23 +922,25 @@ namespace Microsoft.AspNet.Mvc
             [NotNull] Func<ModelBindingContext, string, bool> predicate)
             where TModel : class
         {
-            if (BindingContextProvider == null)
+            if (ActionContext.BindingContext == null)
             {
-                var message = Resources.FormatPropertyOfTypeCannotBeNull(nameof(BindingContextProvider), 
-                                                                         GetType().FullName);
+                var message = Resources.FormatPropertyOfTypeCannotBeNull(
+                    nameof(ActionContext.BindingContext),
+                    typeof(ActionContext).Name);
                 throw new InvalidOperationException(message);
             }
+            
 
-            var bindingContext = await BindingContextProvider.GetActionBindingContextAsync(ActionContext);
-            return await ModelBindingHelper.TryUpdateModelAsync(model,
-                                                                prefix,
-                                                                ActionContext.HttpContext,
-                                                                ModelState,
-                                                                bindingContext.MetadataProvider,
-                                                                bindingContext.ModelBinder,
-                                                                bindingContext.ValueProvider,
-                                                                bindingContext.ValidatorProvider,
-                                                                predicate);
+            return await ModelBindingHelper.TryUpdateModelAsync(
+                model,
+                prefix,
+                ActionContext.HttpContext,
+                ModelState,
+                ActionContext.BindingContext.MetadataProvider,
+                ActionContext.BindingContext.ModelBinder,
+                ActionContext.BindingContext.ValueProvider,
+                ActionContext.BindingContext.ValidatorProvider,
+                predicate);
         }
 
         /// <summary>
@@ -962,23 +963,24 @@ namespace Microsoft.AspNet.Mvc
             [NotNull] params Expression<Func<TModel, object>>[] includeExpressions)
            where TModel : class
         {
-            if (BindingContextProvider == null)
+            if (ActionContext.BindingContext == null)
             {
-                var message = Resources.FormatPropertyOfTypeCannotBeNull(nameof(BindingContextProvider), 
-                                                                         GetType().FullName);
+                var message = Resources.FormatPropertyOfTypeCannotBeNull(
+                    nameof(ActionContext.BindingContext),
+                    typeof(ActionContext).Name);
                 throw new InvalidOperationException(message);
             }
-
-            var bindingContext = await BindingContextProvider.GetActionBindingContextAsync(ActionContext);
-            return await ModelBindingHelper.TryUpdateModelAsync(model,
-                                                                prefix,
-                                                                ActionContext.HttpContext,
-                                                                ModelState,
-                                                                bindingContext.MetadataProvider,
-                                                                bindingContext.ModelBinder,
-                                                                valueProvider,
-                                                                bindingContext.ValidatorProvider,
-                                                                includeExpressions);
+            
+            return await ModelBindingHelper.TryUpdateModelAsync(
+                model,
+                prefix,
+                ActionContext.HttpContext,
+                ModelState,
+                ActionContext.BindingContext.MetadataProvider,
+                ActionContext.BindingContext.ModelBinder,
+                valueProvider,
+                ActionContext.BindingContext.ValidatorProvider,
+                includeExpressions);
         }
 
         /// <summary>
@@ -1000,23 +1002,24 @@ namespace Microsoft.AspNet.Mvc
             [NotNull] Func<ModelBindingContext, string, bool> predicate)
             where TModel : class
         {
-            if (BindingContextProvider == null)
+            if (ActionContext.BindingContext == null)
             {
-                var message = Resources.FormatPropertyOfTypeCannotBeNull(nameof(BindingContextProvider), 
-                                                                         GetType().FullName);
+                var message = Resources.FormatPropertyOfTypeCannotBeNull(
+                    nameof(ActionContext.BindingContext),
+                    typeof(ActionContext).Name);
                 throw new InvalidOperationException(message);
             }
-
-            var bindingContext = await BindingContextProvider.GetActionBindingContextAsync(ActionContext);
-            return await ModelBindingHelper.TryUpdateModelAsync(model,
-                                                                prefix,
-                                                                ActionContext.HttpContext,
-                                                                ModelState,
-                                                                bindingContext.MetadataProvider,
-                                                                bindingContext.ModelBinder,
-                                                                valueProvider,
-                                                                bindingContext.ValidatorProvider,
-                                                                predicate);
+            
+            return await ModelBindingHelper.TryUpdateModelAsync(
+                model,
+                prefix,
+                ActionContext.HttpContext,
+                ModelState,
+                ActionContext.BindingContext.MetadataProvider,
+                ActionContext.BindingContext.ModelBinder,
+                valueProvider,
+                ActionContext.BindingContext.ValidatorProvider,
+                predicate);
         }
 
         public void Dispose()
