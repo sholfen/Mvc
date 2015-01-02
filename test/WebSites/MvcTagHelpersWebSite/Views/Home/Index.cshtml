@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@addtaghelper "Microsoft.AspNet.Mvc.TagHelpers.AnchorTagHelper, Microsoft.AspNet.Mvc.TagHelpers"
+
+<html>
+<body>
+    <div>
+        <a asp-controller="Product">Product Index</a>
+    </div>
+    <div>
+        <a asp-controller="Product" asp-action="List">Product List</a>
+    </div>
+    <div>
+        <a id="HomeIndex">Home Index</a>
+    </div>
+    <div>
+        <a asp-action="Index">Default Controller</a>
+    </div>
+    <div>
+        <a asp-fragment="fragment" asp-controller="Product">Product Index Fragment</a>
+    </div>
+    <div>
+        <a asp-controller="Product" asp-action="Submit" asp-fragment="fragment">Produt Submit Fragment</a>
+    </div>
+    <div>
+        <a id="HomeIndexFragment" asp-fragment="fragment">Home Index Fragment</a>
+    </div>
+    <div>
+        <a asp-action="Index" asp-fragment="fragment" asp-protocol="ftp">FTP Home Index Fragment</a>
+    </div>
+    <div>
+        <a asp-controller="Product" asp-protocol="unkonwn" asp-action="List">Unknown Protocol Product List</a>
+    </div>
+    <div>
+        <a id="HomeIndexEmptyProtocol" asp-protocol="">Empty Protocol Home Index</a>
+    </div>
+    <div>
+        <a asp-route="areaRoute" asp-route-area="Customer"
+           asp-route-controller="Customer"
+           asp-route-action="Index"
+           asp-fragment="fragment">Customer Area Customer Index</a>
+    </div>
+    <div>
+        <a href="/Order/List">Href Order List</a>
+    </div>
+</body>
+</html>

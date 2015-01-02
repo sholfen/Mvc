@@ -1,0 +1,13 @@
+﻿@{
+    ViewBag.Title = "Customer Page";
+}
+
+@addtaghelper "Microsoft.AspNet.Mvc.TagHelpers.FormTagHelper, Microsoft.AspNet.Mvc.TagHelpers"
+
+<html>
+<body>
+    <form asp-route-area="Customer" asp-controller="Customer" asp-action="Index">
+        <input type="submit" />
+    </form>
+</body>
+</html>

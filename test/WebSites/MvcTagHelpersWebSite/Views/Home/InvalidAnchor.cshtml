@@ -1,0 +1,40 @@
+﻿@{
+    ViewBag.Title = "Invalid Anchor Page";
+}
+
+@addtaghelper "Microsoft.AspNet.Mvc.TagHelpers.AnchorTagHelper, Microsoft.AspNet.Mvc.TagHelpers"
+
+<html>
+<body>
+    <div>
+        <a asp-controller="NoControll">No Controller</a>
+    </div>
+    <div>
+        <a asp-controller="NoControll" asp-fragment="fragment">No Controller Fragment</a>
+    </div>
+    <div>
+        <a asp-controller="AnchorTagHelper" asp-action="NoAction">No Action</a>
+    </div>
+    <div>
+        <a id="Id" asp-host="somewhere">Some Where</a>
+    </div>
+    <div>
+        <a asp-protocol="unknown" asp-controller="NoControll" asp-fragment="fragment">Unknown Protocol No Controller Fragment</a>
+    </div>
+    <div>
+        <a asp-route="productRoute"
+           asp-fragment="fragment"
+           asp-route-action="Submit"
+           asp-route-area="NoArea"
+           asp-route-id="1">Product Route No Area Parameter</a>
+    </div>
+    <div>
+        <a asp-route="areaRoute"
+           asp-route-area="NoArea"
+           asp-route-controller="Customer"
+           asp-route-action="Index"
+           asp-protocol="http"
+           asp-fragment="fragment">No Area</a>
+    </div>
+</body>
+</html>
