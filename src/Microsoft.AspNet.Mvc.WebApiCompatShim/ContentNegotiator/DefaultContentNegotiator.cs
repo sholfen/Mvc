@@ -301,26 +301,10 @@ namespace System.Net.Http.Formatting
                 for (int i = 0; i < supportedMediaTypes.Count; i++)
                 {
                     MediaTypeHeaderValue supportedMediaType = supportedMediaTypes[i];
-                    MediaTypeHeaderValueRange range;
+                    MediaTypeFormatterMatchRanking ranking;
                     if (supportedMediaType != null && acceptMediaTypeValue.Quality != FormattingUtilities.NoMatch &&
-                        supportedMediaType.IsSubsetOf(acceptMediaTypeValue, out range))
+                        supportedMediaType.IsSubsetOf(acceptMediaTypeValue, out ranking))
                     {
-                        MediaTypeFormatterMatchRanking ranking;
-                        switch (range)
-                        {
-                            case MediaTypeHeaderValueRange.AllMediaRange:
-                                ranking = MediaTypeFormatterMatchRanking.MatchOnRequestAcceptHeaderAllMediaRange;
-                                break;
-
-                            case MediaTypeHeaderValueRange.SubtypeMediaRange:
-                                ranking = MediaTypeFormatterMatchRanking.MatchOnRequestAcceptHeaderSubtypeMediaRange;
-                                break;
-
-                            default:
-                                ranking = MediaTypeFormatterMatchRanking.MatchOnRequestAcceptHeaderLiteral;
-                                break;
-                        }
-
                         return new MediaTypeFormatterMatch(formatter, supportedMediaType, acceptMediaTypeValue.Quality, ranking);
                     }
                 }
