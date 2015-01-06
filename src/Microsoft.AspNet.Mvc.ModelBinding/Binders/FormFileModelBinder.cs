@@ -12,11 +12,39 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
     {
         public async Task<bool> BindModelAsync([NotNull] ModelBindingContext bindingContext)
         {
+            if (bindingContext.ModelType == typeof(IFormFile))
+            {
+                var postedFiles = await GetFormFiles(bindingContext);
+
+                if (!postedFiles.Any())
+                {
+                    return false;
+                }
+                bindingContext.Model = postedFiles.First();
+                return true;
+            }
+            else if (typeof(IEnumerable<IFormFile>).GetTypeInfo().IsAssignableFrom(
+                    bindingContext.ModelType.GetTypeInfo()))
+            {
+                var postedFiles = await GetFormFiles(bindingContext);
+
+                if (!postedFiles.Any())
+                {
+                    return false;
+                }
+                bindingContext.Model = ConvertValuesToCollectionType(bindingContext.ModelType, postedFiles);
+                return true;
+            }
+            return false;
+        }
+
+        private async Task<List<IFormFile>> GetFormFiles(ModelBindingContext bindingContext)
+        {
             var request = bindingContext.OperationBindingContext.HttpContext.Request;
+            var postedFiles = new List<IFormFile>();
             if (request.HasFormContentType)
             {
-                var form =  await request.ReadFormAsync();
-                var postedFiles = new List<IFormFile>();
+                var form = await request.ReadFormAsync();
 
                 foreach (var file in form.Files)
                 {
@@ -29,28 +57,13 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
 
                     var modelName = parsedContentDisposition.Key;
 
-                    if (modelName.Equals(bindingContext.ModelName))
+                    if (modelName.Equals(bindingContext.ModelName, StringComparison.OrdinalIgnoreCase))
                     {
                         postedFiles.Add(file);
                     }
                 }
-
-                if (!postedFiles.Any())
-                {
-                    return false;
-                }
-                if (bindingContext.ModelType == typeof(IFormFile))
-                {
-                    bindingContext.Model = postedFiles.First();
-                }
-                else if (typeof(IEnumerable<IFormFile>).GetTypeInfo().IsAssignableFrom(
-                        bindingContext.ModelType.GetTypeInfo()))
-                {
-                    bindingContext.Model = ConvertValuesToCollectionType(bindingContext.ModelType, postedFiles);
-                }
-                return true;
             }
-            return false;
+            return postedFiles;
         }
 
         private object ConvertValuesToCollectionType(Type modelType, IList<IFormFile> values)

@@ -12,6 +12,8 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
     {
         private static MediaTypeHeaderValue _formEncodedContentType =
             MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+        private static MediaTypeHeaderValue _multipartFormContentType =
+            MediaTypeHeaderValue.Parse("multipart/form-data");
 
         public IValueProvider GetValueProvider([NotNull] ValueProviderFactoryContext context)
         {
@@ -32,7 +34,8 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
         {
             MediaTypeHeaderValue requestContentType = null;
             return MediaTypeHeaderValue.TryParse(request.ContentType, out requestContentType) &&
-                _formEncodedContentType.IsSubsetOf(requestContentType);
+                (_formEncodedContentType.IsSubsetOf(requestContentType) ||
+                _multipartFormContentType.IsSubsetOf(requestContentType));
         }
 
         private static CultureInfo GetCultureInfo(HttpRequest request)
