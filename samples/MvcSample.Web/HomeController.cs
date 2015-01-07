@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
@@ -92,11 +93,16 @@ namespace MvcSample.Web
         /// <summary>
         /// Action that shows multiple file upload.
         /// </summary>
-        public ActionResult PostFile(IEnumerable<IFormFile> file)
+        public async Task<ActionResult> PostFile(IEnumerable<IFormFile> file)
         {
+            if (!ModelState.IsValid)
+            {
+                return View("MyView");
+            }
+
             foreach (var f in file)
             {
-                f.SaveAs("C:\\Temp\\test-" + f.ParseContentDisposition().Value);
+                await f.SaveAsAsync("C:\\Temp\\test-" + f.ParseContentDisposition().Value);
             }
             return View();
         }

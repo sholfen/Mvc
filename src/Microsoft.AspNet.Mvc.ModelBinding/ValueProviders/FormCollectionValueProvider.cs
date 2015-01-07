@@ -11,9 +11,9 @@ using Microsoft.AspNet.Mvc.ModelBinding.Internal;
 
 namespace Microsoft.AspNet.Mvc.ModelBinding
 {
-    public class FormCollectionValueProvider<TBinderMetadata> :
-        MetadataAwareValueProvider<TBinderMetadata>, IEnumerableValueProvider
-        where TBinderMetadata : IValueProviderMetadata
+    public class FormCollectionValueProvider :
+        MetadataAwareValueProvider<IFormDataValueProviderMetadata>,
+        IEnumerableValueProvider
     {
         private readonly CultureInfo _culture;
         private PrefixContainer _prefixContainer;

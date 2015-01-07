@@ -164,13 +164,12 @@ namespace Microsoft.AspNet.Mvc.Core.Test
             // Arrange
             var mockHttpContext = new Mock<HttpContext>();
             var requestContext = new Mock<HttpRequest>();
-            IFormCollection formsCollection =
-                new MockCookieCollection(new Dictionary<string, string>() { { "form-field-name", string.Empty } });
+            var formCollection = new Mock<IFormCollection>();
+            formCollection.Setup(f => f["form-field-name"]).Returns(string.Empty);
             requestContext.Setup(o => o.ReadFormAsync(CancellationToken.None))
-                          .Returns(Task.FromResult(formsCollection));
+                          .Returns(Task.FromResult(formCollection.Object));
             mockHttpContext.Setup(o => o.Request)
                            .Returns(requestContext.Object);
-
             var config = new AntiForgeryOptions()
             {
                 FormFieldName = "form-field-name"
@@ -191,12 +190,12 @@ namespace Microsoft.AspNet.Mvc.Core.Test
         public async Task GetFormToken_FormFieldIsInvalid_PropagatesException()
         {
             // Arrange
-            IFormCollection formsCollection =
-                new MockCookieCollection(new Dictionary<string, string>() { { "form-field-name", "invalid-value" } });
+            var formCollection = new Mock<IFormCollection>();
+            formCollection.Setup(f => f["form-field-name"]).Returns("invalid-value");
 
             var requestContext = new Mock<HttpRequest>();
             requestContext.Setup(o => o.ReadFormAsync(CancellationToken.None))
-                          .Returns(Task.FromResult(formsCollection));
+                          .Returns(Task.FromResult(formCollection.Object));
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(o => o.Request)
@@ -233,10 +232,10 @@ namespace Microsoft.AspNet.Mvc.Core.Test
             // Arrange
             var mockHttpContext = new Mock<HttpContext>();
             var requestContext = new Mock<HttpRequest>();
-            IFormCollection formsCollection =
-                new MockCookieCollection(new Dictionary<string, string>() { { "form-field-name", "valid-value" } });
+            var formCollection = new Mock<IFormCollection>();
+            formCollection.Setup(f => f["form-field-name"]).Returns("valid-value");
             requestContext.Setup(o => o.ReadFormAsync(CancellationToken.None))
-                          .Returns(Task.FromResult(formsCollection));
+                          .Returns(Task.FromResult(formCollection.Object));
             mockHttpContext.Setup(o => o.Request)
                            .Returns(requestContext.Object);
 
@@ -363,7 +362,7 @@ namespace Microsoft.AspNet.Mvc.Core.Test
             }
         }
 
-        private class MockCookieCollection : IFormCollection
+        private class MockCookieCollection : IReadableStringCollection
         {
             private Dictionary<string, string> _dictionary;
 
@@ -380,14 +379,6 @@ namespace Microsoft.AspNet.Mvc.Core.Test
                 get
                 {
                     return _dictionary.Keys;
-                }
-            }
-
-            public IFormFileCollection Files
-            {
-                get
-                {
-                    throw new NotImplementedException();
                 }
             }
 

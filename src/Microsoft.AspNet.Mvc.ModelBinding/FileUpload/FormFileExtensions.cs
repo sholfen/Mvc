@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 
 namespace Microsoft.AspNet.Mvc
@@ -17,19 +18,26 @@ namespace Microsoft.AspNet.Mvc
         /// <param name="filename">The name of the file to create.</param>
         public static void SaveAs([NotNull] this IFormFile formFile, string filename)
         {
-            FileStream f = new FileStream(filename, FileMode.Create);
+            
 
-            try
+            using (var fileStream = new FileStream(filename, FileMode.Create))
             {
                 var inputStream = formFile.OpenReadStream();
-                byte[] streamBytes = new byte[inputStream.Length];
-                inputStream.Read(streamBytes, 0, streamBytes.Length);
-                f.Write(streamBytes, 0, streamBytes.Length);
-                f.Flush();
+                inputStream.CopyTo(fileStream);
             }
-            finally
+        }
+
+        /// <summary>
+        /// Asynchronously saves the contents of an uploaded file.
+        /// </summary>
+        /// <param name="formFile">The <see cref="IFormFile"/>.</param>
+        /// <param name="filename">The name of the file to create.</param>
+        public async static Task SaveAsAsync([NotNull] this IFormFile formFile, string filename)
+        {
+            using (var fileStream = new FileStream(filename, FileMode.Create))
             {
-                f.Dispose();
+                var inputStream = formFile.OpenReadStream();
+                await inputStream.CopyToAsync(fileStream);
             }
         }
 
