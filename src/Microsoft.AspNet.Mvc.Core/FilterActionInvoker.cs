@@ -379,21 +379,13 @@ namespace Microsoft.AspNet.Mvc
                 ValidatorProvider = new CompositeModelValidatorProvider(_resourceExecutingContext.ValidatorProviders),
             };
 
-            var valueProviders = new List<IValueProvider>();
             var valueProviderFactoryContext = new ValueProviderFactoryContext(
                 ActionContext.HttpContext, 
                 ActionContext.RouteData.Values);
 
-            foreach (var valueProvidersFactory in _resourceExecutingContext.ValueProviderFactories)
-            {
-                var valueProvider = valueProvidersFactory.GetValueProvider(valueProviderFactoryContext);
-                if (valueProvider != null)
-                {
-                    valueProviders.Add(valueProvider);
-                }
-            }
-
-            bindingContext.ValueProvider = new CompositeValueProvider(valueProviders);
+            bindingContext.ValueProvider = CompositeValueProvider.Create(
+                _resourceExecutingContext.ValueProviderFactories,
+                valueProviderFactoryContext);
 
             ActionContext.BindingContext = bindingContext;
             var arguments = await GetActionArgumentsAsync(ActionContext);
