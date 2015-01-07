@@ -999,6 +999,54 @@ namespace Microsoft.AspNet.Mvc
                                                                 predicate);
         }
 
+        [NonAction]
+        public Task TryValidateModelAsync(object model)
+        {
+              return TryValidateModelAsync(model, null /* prefix */);
+        }
+
+        public virtual async Task TryValidateModelAsync(object model, string prefix)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException("model");
+            }
+
+            var bindingContext = await BindingContextProvider.GetActionBindingContextAsync(ActionContext);
+            var modelMetadata = bindingContext.MetadataProvider.GetMetadataForType(
+               modelAccessor: null,
+               modelType: model.GetType());
+
+            var operationBindingContext = new OperationBindingContext
+            {
+                ModelBinder = bindingContext.ModelBinder,
+                ValidatorProvider = bindingContext.ValidatorProvider,
+                MetadataProvider = bindingContext.MetadataProvider,
+                HttpContext = Context
+            };
+
+            var modelBindingContext = new ModelBindingContext
+            {
+                ModelMetadata = modelMetadata,
+                ModelName = prefix,
+                Model = model,
+                ModelState = ModelState,
+                ValueProvider = bindingContext.ValueProvider,
+                FallbackToEmptyPrefix = true,
+                OperationBindingContext = operationBindingContext,
+                PropertyFilter = (context, propertyName) => true
+            };
+
+            var validationContext = new ModelValidationContext(operationBindingContext.MetadataProvider,
+                                                                   operationBindingContext.ValidatorProvider,
+                                                                   ModelState,
+                                                                   modelMetadata,
+                                                                   containerMetadata: null);
+
+            modelBindingContext.ValidationNode.Validate(validationContext);
+        }
+
+
         public void Dispose()
         {
             Dispose(disposing: true);

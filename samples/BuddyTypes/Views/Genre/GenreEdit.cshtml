@@ -1,0 +1,10 @@
+﻿﻿@model BuddyTypes.Models.GenreDTO
+
+@using (Html.BeginForm())
+{
+    <h2>Genre DTO</h2>
+    @Html.ValidationSummary()
+        @Html.EditorForModel()
+    @Html.LabelFor(x => x.Name)
+    <input type="submit" value="Submit Order" />
+}

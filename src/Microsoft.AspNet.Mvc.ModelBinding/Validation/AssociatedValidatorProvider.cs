@@ -1,14 +1,18 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.AspNet.Mvc.ModelBinding.Internal;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Microsoft.AspNet.Mvc.ModelBinding
 {
     public abstract class AssociatedValidatorProvider : IModelValidatorProvider
     {
+        private ModelMetadataAttributeHelper modelMetadataAttrHelper = new ModelMetadataAttributeHelper();
+
         public IEnumerable<IModelValidator> GetValidators([NotNull] ModelMetadata metadata)
         {
             if (metadata.ContainerType != null && !string.IsNullOrEmpty(metadata.PropertyName))
@@ -38,8 +42,10 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                     "metadata");
             }
 
-            var attributes = property.GetCustomAttributes();
-            return GetValidators(metadata, attributes);
+            var attributes = property.GetCustomAttributes().Cast<object>();
+            attributes = modelMetadataAttrHelper.GetModelMetadataAttributesOnProperty(metadata.ContainerType, attributes, property.Name);
+
+            return GetValidators(metadata, attributes.Cast<Attribute>());
         }
 
         private IEnumerable<IModelValidator> GetValidatorsForType(ModelMetadata metadata)
@@ -47,6 +53,8 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
             var attributes = metadata.ModelType
                                      .GetTypeInfo()
                                      .GetCustomAttributes();
+            attributes = modelMetadataAttrHelper.GetModelMetadataAttributesOnType(metadata.ModelType, attributes);
+
             return GetValidators(metadata, attributes);
         }
     }

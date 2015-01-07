@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.AspNet.Mvc.ModelBinding.Internal;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
 
         private readonly ConcurrentDictionary<Type, Dictionary<string, PropertyInformation>> _typePropertyInfoCache =
                 new ConcurrentDictionary<Type, Dictionary<string, PropertyInformation>>();
+
+        private ModelMetadataAttributeHelper modelMetadataAttrHelper = new ModelMetadataAttributeHelper();
 
         public IEnumerable<ModelMetadata> GetMetadataForProperties(object container, [NotNull] Type containerType)
         {
@@ -163,16 +166,21 @@ namespace Microsoft.AspNet.Mvc.ModelBinding
                 attributes = attributes.Concat(associatedAttributes);
             }
 
+            attributes = modelMetadataAttrHelper.GetModelMetadataAttributesOnType(type, attributes);
+
             return CreateMetadataPrototype(attributes, containerType: null, modelType: type, propertyName: null);
         }
 
         private PropertyInformation CreatePropertyInformation(Type containerType, PropertyHelper helper)
         {
             var property = helper.Property;
+            var attributes = ModelAttributes.GetAttributesForProperty(property);
+            attributes = modelMetadataAttrHelper.GetModelMetadataAttributesOnProperty(containerType, attributes, property.Name);
+
             return new PropertyInformation
             {
                 PropertyHelper = helper,
-                Prototype = CreateMetadataPrototype(ModelAttributes.GetAttributesForProperty(property),
+                Prototype = CreateMetadataPrototype(attributes,
                                                     containerType,
                                                     property.PropertyType,
                                                     property.Name),
