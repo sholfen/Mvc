@@ -19,7 +19,7 @@ namespace Microsoft.AspNet.Mvc
         private readonly IActionDescriptorsCollectionProvider _actionDescriptorsCollectionProvider;
         private readonly IActionSelectorDecisionTreeProvider _decisionTreeProvider;
         private readonly INestedProviderManager<ActionConstraintProviderContext> _actionConstraintProvider;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public DefaultActionSelector(
             [NotNull] IActionDescriptorsCollectionProvider actionDescriptorsCollectionProvider,
@@ -35,7 +35,7 @@ namespace Microsoft.AspNet.Mvc
 
         public Task<ActionDescriptor> SelectAsync([NotNull] RouteContext context)
         {
-            using (_logger.BeginScope("DefaultActionSelector.SelectAsync"))
+            using (_logger.BeginScope(nameof(DefaultActionSelector) + ".SelectAsync"))
             {
                 var tree = _decisionTreeProvider.DecisionTree;
                 var matchingRouteConstraints = tree.Select(context.RouteData.Values);
@@ -68,9 +68,10 @@ namespace Microsoft.AspNet.Mvc
                     {
                         _logger.WriteValues(new DefaultActionSelectorSelectAsyncValues()
                         {
-                            ActionsMatchingRouteConstraints = matchingRouteConstraints,
-                            ActionsMatchingActionConstraints = matchingActions,
-                            FinalMatches = finalMatches,
+                            Message = "No matching action found for the current request.",
+                            ActionsMatchingRouteConstraints = matchingRouteConstraints.Select(actionDesc => new ActionDescriptorValues(actionDesc)),
+                            ActionsMatchingActionConstraints = matchingActions.Select(actionDesc => new ActionDescriptorValues(actionDesc)),
+                            FinalMatches = finalMatches.Select(actionDesc => new ActionDescriptorValues(actionDesc))
                         });
                     }
 
@@ -84,10 +85,11 @@ namespace Microsoft.AspNet.Mvc
                     {
                         _logger.WriteValues(new DefaultActionSelectorSelectAsyncValues()
                         {
-                            ActionsMatchingRouteConstraints = matchingRouteConstraints,
-                            ActionsMatchingActionConstraints = matchingActions,
-                            FinalMatches = finalMatches,
-                            SelectedAction = selectedAction
+                            Message = "Matching action found for the current request.",
+                            ActionsMatchingRouteConstraints = matchingRouteConstraints.Select(actionDesc => new ActionDescriptorValues(actionDesc)),
+                            ActionsMatchingActionConstraints = matchingActions.Select(actionDesc => new ActionDescriptorValues(actionDesc)),
+                            FinalMatches = finalMatches.Select(actionDesc => new ActionDescriptorValues(actionDesc)),
+                            SelectedAction = new ActionDescriptorValues(selectedAction)
                         });
                     }
 
@@ -99,9 +101,10 @@ namespace Microsoft.AspNet.Mvc
                     {
                         _logger.WriteValues(new DefaultActionSelectorSelectAsyncValues()
                         {
-                            ActionsMatchingRouteConstraints = matchingRouteConstraints,
-                            ActionsMatchingActionConstraints = matchingActions,
-                            FinalMatches = finalMatches,
+                            Message = "Multiple actions found matching the current request.",
+                            ActionsMatchingRouteConstraints = matchingRouteConstraints.Select(actionDesc => new ActionDescriptorValues(actionDesc)),
+                            ActionsMatchingActionConstraints = matchingActions.Select(actionDesc => new ActionDescriptorValues(actionDesc)),
+                            FinalMatches = finalMatches.Select(actionDesc => new ActionDescriptorValues(actionDesc)),
                         });
                     }
 
